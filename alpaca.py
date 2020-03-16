@@ -52,9 +52,9 @@ class Device:
             device_number,
         )
 
-    def action(self, Action: str, *Parameters):
+    def Action(self, Action: str, *Parameters):
         """Access functionality beyond the built-in capabilities of the ASCOM device interfaces.
-        
+
         Args:
             Action (str): A well known name that represents the action to be carried out.
             *Parameters: List of required parameters or empty if none are required.
@@ -62,7 +62,7 @@ class Device:
         """
         return self._put("action", Action=Action, Parameters=Parameters)["Value"]
 
-    def commandblind(self, Command: str, Raw: bool):
+    def CommandBlind(self, Command: str, Raw: bool):
         """Transmit an arbitrary string to the device and does not wait for a response.
 
         Args:
@@ -74,9 +74,9 @@ class Device:
         """
         self._put("commandblind", Command=Command, Raw=Raw)
 
-    def commandbool(self, Command: str, Raw: bool):
+    def CommandBool(self, Command: str, Raw: bool):
         """Transmit an arbitrary string to the device and wait for a boolean response.
-        
+
         Args:
             Command (str): The literal command string to be transmitted.
             Raw (bool): If true, command is transmitted 'as-is'.
@@ -86,7 +86,7 @@ class Device:
         """
         return self._put("commandbool", Command=Command, Raw=Raw)["Value"]
 
-    def commandstring(self, Command: str, Raw: bool):
+    def CommandString(self, Command: str, Raw: bool):
         """Transmit an arbitrary string to the device and wait for a string response.
 
         Args:
@@ -98,40 +98,49 @@ class Device:
         """
         return self._put("commandstring", Command=Command, Raw=Raw)["Value"]
 
-    def connected(self, Connected: Optional[bool] = None):
-        """Retrieve or set the connected state of the device.
+    @property
+    def Connected(self):
+        return self._get("connected")
+
+    @Connected.setter
+    def Connected(self, Connected: bool):
+        """Set the connected state of the device.
 
         Args:
             Connected (bool): Set True to connect to device hardware.
                 Set False to disconnect from device hardware.
                 Set None to get connected state (default).
-        
+
         """
-        if Connected == None:
-            return self._get("connected")
         self._put("connected", Connected=Connected)
 
-    def description(self) -> str:
+    @property
+    def Description(self) -> str:
         """Get description of the device."""
         return self._get("name")
 
-    def driverinfo(self) -> List[str]:
+    @property
+    def DriverInfo(self) -> List[str]:
         """Get information of the device."""
         return [i.strip() for i in self._get("driverinfo").split(",")]
 
-    def driverversion(self) -> str:
+    @property
+    def DriverVersion(self) -> str:
         """Get string containing only the major and minor version of the driver."""
         return self._get("driverversion")
 
-    def interfaceversion(self) -> int:
+    @property
+    def InterfaceVersion(self) -> int:
         """ASCOM Device interface version number that this device supports."""
         return self._get("interfaceversion")
 
-    def name(self) -> str:
+    @property
+    def Name(self) -> str:
         """Get name of the device."""
         return self._get("name")
 
-    def supportedactions(self) -> List[str]:
+    @property
+    def SupportedActions(self) -> List[str]:
         """Get list of action names supported by this driver."""
         return self._get("supportedactions")
 
@@ -141,9 +150,10 @@ class Device:
         Args:
             attribute (str): Attribute to get from server.
             **data: Data to send with request.
-        
+
         """
-        response = requests.get("%s/%s" % (self.base_url, attribute), data=data)
+        response = requests.get(
+            "%s/%s" % (self.base_url, attribute), data=data)
         self.__check_error(response)
         return response.json()["Value"]
 
@@ -153,9 +163,10 @@ class Device:
         Args:
             attribute (str): Attribute to put to server.
             **data: Data to send with request.
-        
+
         """
-        response = requests.put("%s/%s" % (self.base_url, attribute), data=data)
+        response = requests.put(
+            "%s/%s" % (self.base_url, attribute), data=data)
         self.__check_error(response)
         return response.json()
 
@@ -186,17 +197,18 @@ class Switch(Device):
         """Initialize Switch object."""
         super().__init__(address, "switch", device_number, protocall, api_version)
 
-    def maxswitch(self) -> int:
+    @property
+    def MaxSwitch(self) -> int:
         """Count of switch devices managed by this driver.
 
         Returns:
             Number of switch devices managed by this driver. Devices are numbered from 0
             to MaxSwitch - 1.
-        
+
         """
         return self._get("maxswitch")
 
-    def canwrite(self, Id: Optional[int] = 0) -> bool:
+    def CanWrite(self, Id: Optional[int] = 0) -> bool:
         """Indicate whether the specified switch device can be written to.
 
         Notes:
@@ -209,11 +221,11 @@ class Switch(Device):
             Whether the specified switch device can be written to, default true. This is
             false if the device cannot be written to, for example a limit switch or a
             sensor.
-        
+
         """
         return self._get("canwrite", Id=Id)
 
-    def getswitch(self, Id: Optional[int] = 0) -> bool:
+    def GetSwitch(self, Id: Optional[int] = 0) -> bool:
         """Return the state of switch device id as a boolean.
 
         Notes:
@@ -221,14 +233,14 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             State of switch device id as a boolean.
-        
+
         """
         return self._get("getswitch", Id=Id)
 
-    def getswitchdescription(self, Id: Optional[int] = 0) -> str:
+    def GetSwitchDescription(self, Id: Optional[int] = 0) -> str:
         """Get the description of the specified switch device.
 
         Notes:
@@ -236,14 +248,14 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             Description of the specified switch device.
-        
+
         """
         return self._get("getswitchdescription", Id=Id)
 
-    def getswitchname(self, Id: Optional[int] = 0) -> str:
+    def GetSwitchName(self, Id: Optional[int] = 0) -> str:
         """Get the name of the specified switch device.
 
         Notes:
@@ -251,14 +263,14 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             Name of the specified switch device.
-        
+
         """
         return self._get("getswitchname", Id=Id)
 
-    def getswitchvalue(self, Id: Optional[int] = 0) -> str:
+    def GetSwitchValue(self, Id: Optional[int] = 0) -> str:
         """Get the value of the specified switch device as a double.
 
         Notes:
@@ -266,14 +278,14 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             Value of the specified switch device.
-        
+
         """
         return self._get("getswitchvalue", Id=Id)
 
-    def minswitchvalue(self, Id: Optional[int] = 0) -> str:
+    def MinSwitchValue(self, Id: Optional[int] = 0) -> str:
         """Get the minimum value of the specified switch device as a double.
 
         Notes:
@@ -281,14 +293,14 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             Minimum value of the specified switch device as a double.
-        
+
         """
         return self._get("minswitchvalue", Id=Id)
 
-    def setswitch(self, Id: int, State: bool):
+    def SetSwitch(self, Id: int, State: bool):
         """Set a switch controller device to the specified state, True or False.
 
         Notes:
@@ -301,7 +313,7 @@ class Switch(Device):
         """
         self._put("setswitch", Id=Id, State=State)
 
-    def setswitchname(self, Id: int, Name: str):
+    def SetSwitchName(self, Id: int, Name: str):
         """Set a switch device name to the specified value.
 
         Notes:
@@ -314,7 +326,7 @@ class Switch(Device):
         """
         self._put("setswitchname", Id=Id, Name=Name)
 
-    def setswitchvalue(self, Id: int, Value: float):
+    def SetSwitchValue(self, Id: int, Value: float):
         """Set a switch device value to the specified value.
 
         Notes:
@@ -327,7 +339,7 @@ class Switch(Device):
         """
         self._put("setswitchvalue", Id=Id, Value=Value)
 
-    def switchstep(self, Id: Optional[int] = 0) -> str:
+    def SwitchStep(self, Id: Optional[int] = 0) -> str:
         """Return the step size that this device supports.
 
         Return the step size that this device supports (the difference between
@@ -338,10 +350,10 @@ class Switch(Device):
 
         Args:
             Id (int): The device number.
-        
+
         Returns:
             Maximum value of the specified switch device as a double.
-        
+
         """
         return self._get("switchstep", Id=Id)
 
@@ -361,12 +373,13 @@ class SafetyMonitor(Device):
             address, "safetymonitor", device_number, protocall, api_version
         )
 
-    def issafe(self) -> bool:
+    @property
+    def IsSafe(self) -> bool:
         """Indicate whether the monitored state is safe for use.
 
         Returns:
             True if the state is safe, False if it is unsafe.
-        
+
         """
         return self._get("issafe")
 
@@ -384,16 +397,18 @@ class Dome(Device):
         """Initialize Dome object."""
         super().__init__(address, "dome", device_number, protocall, api_version)
 
-    def altitude(self) -> float:
+    @property
+    def Altitude(self) -> float:
         """Dome altitude.
 
         Returns:
             Dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
-        
+
         """
         return self._get("altitude")
 
-    def athome(self) -> bool:
+    @property
+    def AtHome(self) -> bool:
         """Indicate whether the dome is in the home position.
 
         Notes:
@@ -406,11 +421,12 @@ class Dome(Device):
 
         Returns:
             True if dome is in the home position.
-        
+
         """
         return self._get("athome")
 
-    def atpark(self) -> bool:
+    @property
+    def AtPark(self) -> bool:
         """Indicate whether the telescope is at the park position.
 
         Notes:
@@ -422,7 +438,8 @@ class Dome(Device):
         """
         return self._get("atpark")
 
-    def azimuth(self) -> float:
+    @property
+    def Azimuth(self) -> float:
         """Dome azimuth.
 
         Returns:
@@ -432,52 +449,58 @@ class Dome(Device):
         """
         return self._get("azimuth")
 
-    def canfindhome(self) -> bool:
+    @property
+    def CanFindHome(self) -> bool:
         """Indicate whether the dome can find the home position.
 
         Returns:
             True if the dome can move to the home position.
-        
+
         """
         return self._get("canfindhome")
 
-    def canpark(self) -> bool:
+    @property
+    def CanPark(self) -> bool:
         """Indicate whether the dome can be parked.
 
         Returns:
             True if the dome is capable of programmed parking (park() method).
-        
+
         """
         return self._get("canpark")
 
-    def cansetaltitude(self) -> bool:
+    @property
+    def CanSetAltitude(self) -> bool:
         """Indicate whether the dome altitude can be set.
 
         Returns:
             True if driver is capable of setting the dome altitude.
-        
+
         """
         return self._get("cansetaltitude")
 
-    def cansetazimuth(self) -> bool:
+    @property
+    def CanSetAzimuth(self) -> bool:
         """Indicate whether the dome azimuth can be set.
 
         Returns:
             True if driver is capable of setting the dome azimuth.
-        
+
         """
         return self._get("cansetazimuth")
 
-    def cansetpark(self) -> bool:
+    @property
+    def CanSetPark(self) -> bool:
         """Indicate whether the dome park position can be set.
 
         Returns:
             True if driver is capable of setting the dome park position.
-        
+
         """
         return self._get("cansetpark")
 
-    def cansetshutter(self) -> bool:
+    @property
+    def CanSetShutter(self) -> bool:
         """Indicate whether the dome shutter can be opened.
 
         Returns:
@@ -486,65 +509,72 @@ class Dome(Device):
         """
         return self._get("cansetshutter")
 
-    def canslave(self) -> bool:
+    @property
+    def CanSlave(self) -> bool:
         """Indicate whether the dome supports slaving to a telescope.
 
         Returns:
             True if driver is capable of slaving to a telescope.
-        
+
         """
         return self._get("canslave")
 
-    def cansyncazimuth(self) -> bool:
+    @property
+    def CanSyncAzimuth(self) -> bool:
         """Indicate whether the dome azimuth position can be synched.
 
         Notes:
             True if driver is capable of synchronizing the dome azimuth position using
             the synctoazimuth(float) method.
-        
+
         Returns:
             True or False value.
-        
+
         """
         return self._get("cansyncazimuth")
 
-    def shutterstatus(self) -> int:
+    @property
+    def ShutterStatus(self) -> int:
         """Status of the dome shutter or roll-off roof.
 
         Notes:
             0 = Open, 1 = Closed, 2 = Opening, 3 = Closing, 4 = Shutter status error.
-        
+
         Returns:
             Status of the dome shutter or roll-off roof.
 
         """
         return self._get("shutterstatus")
 
-    def slaved(self, Slaved: Optional[bool] = None) -> bool:
+    @property
+    def Slaved(self) -> bool:
+        return self._get("slaved")
+
+    @Slaved.setter
+    def Slaved(self, Slaved: bool):
         """Set or indicate whether the dome is slaved to the telescope.
-        
+
         Returns:
             True or False value in not set.
-        
+
         """
-        if Slaved == None:
-            return self._get("slaved")
         self._put("slaved", Slaved=Slaved)
 
-    def slewing(self) -> bool:
+    @property
+    def Slewing(self) -> bool:
         """Indicate whether the any part of the dome is moving.
 
         Notes:
             True if any part of the dome is currently moving, False if all dome
             components are steady.
-        
+
         Return:
             True or False value.
-        
+
         """
         return self._get("slewing")
 
-    def abortslew(self):
+    def AbortSlew(self):
         """Immediately cancel current dome operation.
 
         Notes:
@@ -554,44 +584,44 @@ class Dome(Device):
         """
         self._put("abortslew")
 
-    def closeshutter(self):
+    def CloseShutter(self):
         """Close the shutter or otherwise shield telescope from the sky."""
         self._put("closeshutter")
 
-    def findhome(self):
+    def FindHome(self):
         """Start operation to search for the dome home position.
 
         Notes:
             After home position is established initializes azimuth to the default value
             and sets the athome flag.
-        
+
         """
         self._put("findhome")
 
-    def openshutter(self):
+    def OpenShutter(self):
         """Open shutter or otherwise expose telescope to the sky."""
         self._put("openshutter")
 
-    def park(self):
+    def Park(self):
         """Rotate dome in azimuth to park position.
 
         Notes:
             After assuming programmed park position, sets atpark flag.
-        
+
         """
         self._put("park")
 
-    def setpark(self):
+    def SetPark(self):
         """Set current azimuth, altitude position of dome to be the park position."""
         self._put("setpark")
 
-    def slewtoaltitude(self, Altitude: float):
+    def SlewToAltitude(self, Altitude: float):
         """Slew the dome to the given altitude position."""
         self._put("slewtoaltitude", Altitude=Altitude)
 
-    def slewtoazimuth(self, Azimuth: float):
+    def SlewToAzimuth(self, Azimuth: float):
         """Slew the dome to the given azimuth position.
-        
+
         Args:
             Azimuth (float): Target dome azimuth (degrees, North zero and increasing
                 clockwise. i.e., 90 East, 180 South, 270 West).
@@ -599,13 +629,13 @@ class Dome(Device):
         """
         self._put("slewtoazimuth", Azimuth=Azimuth)
 
-    def synctoazimuth(self, Azimuth: float):
+    def SyncToAzimuth(self, Azimuth: float):
         """Synchronize the current position of the dome to the given azimuth.
 
         Args:
             Azimuth (float): Target dome azimuth (degrees, North zero and increasing
                 clockwise. i.e., 90 East, 180 South, 270 West).
-        
+
         """
         self._put("synctoazimuth", Azimuth=Azimuth)
 
@@ -623,96 +653,120 @@ class Camera(Device):
         """Initialize Camera object."""
         super().__init__(address, "camera", device_number, protocall, api_version)
 
-    def bayeroffsetx(self) -> int:
+    @property
+    def BayerOffsetX(self) -> int:
         """Return the X offset of the Bayer matrix, as defined in SensorType."""
         return self._get("bayeroffsetx")
 
-    def bayeroffsety(self) -> int:
+    @property
+    def BayerOffsetY(self) -> int:
         """Return the Y offset of the Bayer matrix, as defined in SensorType."""
         return self._get("bayeroffsety")
 
-    def binx(self, BinX: Optional[int] = None) -> int:
+    @property
+    def BinX(self) -> int:
+        return self._get("binx")
+
+    @BinX.setter
+    def BinX(self, BinX: int):
         """Set or return the binning factor for the X axis.
 
         Args:
             BinX (int): The X binning value.
-        
+
         Returns:
             Binning factor for the X axis.
-        
+
         """
-        if BinX == None:
-            return self._get("binx")
         self._put("binx", BinX=BinX)
 
-    def biny(self, BinY: Optional[int] = None) -> int:
+    @property
+    def BinY(self):
+        return self._get("biny")
+
+    @BinY.setter
+    def BinY(self, BinY: int):
         """Set or return the binning factor for the Y axis.
 
         Args:
             BinY (int): The Y binning value.
-        
+
         Returns:
             Binning factor for the Y axis.
-        
+
         """
-        if BinY == None:
-            return self._get("biny")
         self._put("biny", BinY=BinY)
 
-    def camerastate(self) -> int:
+    @property
+    def CameraState(self) -> int:
         """Return the camera operational state.
 
         Notes:
             0 = CameraIdle, 1 = CameraWaiting, 2 = CameraExposing,
             3 = CameraReading, 4 = CameraDownload, 5 = CameraError.
-        
+
         Returns:
             Current camera operational state as an integer.
-        
+
         """
         return self._get("camerastate")
 
-    def cameraxsize(self) -> int:
+    @property
+    def CameraXSize(self) -> int:
         """Return the width of the CCD camera chip."""
         return self._get("cameraxsize")
 
-    def cameraysize(self) -> int:
+    @property
+    def CameraYSize(self) -> int:
         """Return the height of the CCD camera chip."""
         return self._get("cameraysize")
 
-    def canabortexposure(self) -> bool:
+    @property
+    def CanAbortExposure(self) -> bool:
         """Indicate whether the camera can abort exposures."""
         return self._get("canabortexposure")
 
-    def canasymmetricbin(self) -> bool:
+    @property
+    def CanAsymmetricBin(self) -> bool:
         """Indicate whether the camera supports asymmetric binning."""
         return self._get("canasymmetricbin")
 
-    def canfastreadout(self) -> bool:
+    @property
+    def CanFastReadout(self) -> bool:
         """Indicate whether the camera has a fast readout mode."""
         return self._get("canfastreadout")
 
-    def cangetcoolerpower(self) -> bool:
+    @property
+    def CanGetCoolerPower(self) -> bool:
         """Indicate whether the camera's cooler power setting can be read."""
         return self._get("cangetcoolerpower")
 
-    def canpulseguide(self) -> bool:
+    @property
+    def CanPulseGuide(self) -> bool:
         """Indicate whether this camera supports pulse guiding."""
         return self._get("canpulseguide")
 
-    def cansetccdtemperature(self) -> bool:
+    @property
+    def CanSetCCDTemperature(self) -> bool:
         """Indicate whether this camera supports setting the CCD temperature."""
         return self._get("cansetccdtemperature")
 
-    def canstopexposure(self) -> bool:
+    @property
+    def CanStopExposure(self) -> bool:
         """Indicate whether this camera can stop an exposure that is in progress."""
         return self._get("canstopexposure")
 
-    def ccdtemperature(self) -> float:
+    @property
+    def CCDTemperature(self) -> float:
         """Return the current CCD temperature in degrees Celsius."""
         return self._get("ccdtemperature")
 
-    def cooleron(self, CoolerOn: Optional[bool] = None) -> bool:
+    @property
+    def CoolerOn(self):
+        return self._get("cooleron")
+
+    @CoolerOn.setter
+    def CoolerOn(self, CoolerOn: bool):
         """Turn the camera cooler on and off or return the current cooler on/off state.
 
         Notes:
@@ -720,50 +774,57 @@ class Camera(Device):
 
         Args:
             CoolerOn (bool): Cooler state.
-        
+
         Returns:
             Current cooler on/off state.
-        
+
         """
-        if CoolerOn == None:
-            return self._get("cooleron")
         self._put("cooleron", CoolerOn=CoolerOn)
 
-    def coolerpower(self) -> float:
+    @property
+    def CoolerPower(self) -> float:
         """Return the present cooler power level, in percent."""
         return self._get("coolerpower")
 
-    def electronsperadu(self) -> float:
+    @property
+    def ElectronsPerADU(self) -> float:
         """Return the gain of the camera in photoelectrons per A/D unit."""
         return self._get("electronsperadu")
 
-    def exposuremax(self) -> float:
+    @property
+    def ExposureMax(self) -> float:
         """Return the maximum exposure time supported by StartExposure."""
         return self._get("exposuremax")
 
-    def exposuremin(self) -> float:
+    @property
+    def ExposureMin(self) -> float:
         """Return the minimum exposure time supported by StartExposure."""
         return self._get("exposuremin")
 
-    def exposureresolution(self) -> float:
+    @property
+    def ExposureResolution(self) -> float:
         """Return the smallest increment in exposure time supported by StartExposure."""
         return self._get("exposureresolution")
 
-    def fastreadout(self, FastReadout: Optional[bool] = None) -> bool:
+    @property
+    def FastReadout(self):
+        return self._get("fastreadout")
+
+    @FastReadout.setter
+    def FastReadout(self, FastReadout: bool):
         """Set or return whether Fast Readout Mode is enabled.
 
         Args:
             FastReadout (bool): True to enable fast readout mode.
-        
+
         Returns:
             Whether Fast Readout Mode is enabled.
 
         """
-        if FastReadout == None:
-            return self._get("fastreadout")
         self._put("fastreadout", FastReadout=FastReadout)
 
-    def fullwellcapacity(self) -> float:
+    @property
+    def FullWellCapacity(self) -> float:
         """Report the full well capacity of the camera.
 
         Report the full well capacity of the camera in electrons, at the current
@@ -775,37 +836,45 @@ class Camera(Device):
         """
         return self._get("fullwellcapacity")
 
-    def gain(self, Gain: Optional[int] = None) -> int:
+    @property
+    def Gain(self):
+        return self._get("gain")
+
+    @Gain.setter
+    def Gain(self, Gain: int):
         """Set or return an index into the Gains array.
 
         Args:
             Gain (int): Index of the current camera gain in the Gains string array.
-        
+
         Returns:
             Index into the Gains array for the selected camera gain.
-        
+
         """
-        if Gain == None:
-            return self._get("gain")
         self._put("gain", Gain=Gain)
 
-    def gainmax(self) -> int:
+    @property
+    def GainMax(self) -> int:
         """Maximum value of Gain."""
         return self._get("gainmax")
 
-    def gainmin(self) -> int:
+    @property
+    def GainMin(self) -> int:
         """Minimum value of Gain."""
         return self._get("gainmin")
 
-    def gains(self) -> List[int]:
+    @property
+    def Gains(self) -> List[int]:
         """Gains supported by the camera."""
         return self._get("gains")
 
-    def hasshutter(self) -> bool:
+    @property
+    def HasShutter(self) -> bool:
         """Indicate whether the camera has a mechanical shutter."""
         return self._get("hasshutter")
 
-    def heatsinktemperature(self) -> float:
+    @property
+    def HeatSinkTemperature(self) -> float:
         """Return the current heat sink temperature.
 
         Returns:
@@ -815,7 +884,8 @@ class Camera(Device):
         """
         return self._get("heatsinktemperature")
 
-    def imagearray(self) -> List[int]:
+    @property
+    def ImageArray(self) -> List[int]:
         r"""Return an array of integers containing the exposure pixel values.
 
         Return an array of 32bit integers containing the pixel values from the last
@@ -835,11 +905,12 @@ class Camera(Device):
 
         Returns:
             Array of integers containing the exposure pixel values.
-        
+
         """
         return self._get("imagearray")
 
-    def imagearrayvariant(self) -> List[int]:
+    @property
+    def ImageArrayVariant(self) -> List[int]:
         r"""Return an array of integers containing the exposure pixel values.
 
         Return an array of 32bit integers containing the pixel values from the last
@@ -859,25 +930,29 @@ class Camera(Device):
 
         Returns:
             Array of integers containing the exposure pixel values.
-        
+
         """
         return self._get("imagearrayvariant")
 
-    def imageready(self) -> bool:
+    @property
+    def ImageReady(self) -> bool:
         """Indicate that an image is ready to be downloaded."""
         return self._get("imageready")
 
-    def ispulseguiding(self) -> bool:
+    @property
+    def IsPulseGuiding(self) -> bool:
         """Indicatee that the camera is pulse guideing."""
         return self._get("ispulseguiding")
 
-    def lastexposureduration(self) -> float:
+    @property
+    def LastExposureDuration(self) -> float:
         """Report the actual exposure duration in seconds (i.e. shutter open time)."""
         return self._get("lastexposureduration")
 
-    def lastexposurestarttime(self) -> str:
+    @property
+    def LastExposureStartTime(self) -> str:
         """Start time of the last exposure in FITS standard format.
-        
+
         Reports the actual exposure start in the FITS-standard
         CCYY-MM-DDThh:mm:ss[.sss...] format.
 
@@ -887,161 +962,188 @@ class Camera(Device):
         """
         return self._get("lastexposurestarttime")
 
-    def maxadu(self) -> int:
+    @property
+    def MaxADU(self) -> int:
         """Camera's maximum ADU value."""
         return self._get("maxadu")
 
-    def maxbinx(self) -> int:
+    @property
+    def MaxBinX(self) -> int:
         """Maximum binning for the camera X axis."""
         return self._get("maxbinx")
 
-    def maxbiny(self) -> int:
+    @property
+    def MaxBinY(self) -> int:
         """Maximum binning for the camera Y axis."""
         return self._get("maxbiny")
 
-    def numx(self, NumX: Optional[int] = None) -> int:
+    @property
+    def NumX(self):
+        return self._get("numx")
+
+    @NumX.setter
+    def NumX(self, NumX: int):
         """Set or return the current subframe width.
-        
+
         Args:
             NumX (int): Subframe width, if binning is active, value is in binned
                 pixels.
-        
+
         Returns:
             Current subframe width.
-        
+
         """
-        if NumX == None:
-            return self._get("numx")
         self._put("numx", NumX=NumX)
 
-    def numy(self, NumY: Optional[int] = None) -> int:
+    @property
+    def NumY(self):
+        return self._get("numy")
+
+    @NumY.setter
+    def NumY(self, NumY: int):
         """Set or return the current subframe height.
-        
+
         Args:
             NumX (int): Subframe height, if binning is active, value is in binned
                 pixels.
-        
+
         Returns:
             Current subframe height.
-        
+
         """
-        if NumY == None:
-            return self._get("numy")
         self._put("numy", NumY=NumY)
 
-    def percentcompleted(self) -> int:
+    @property
+    def PercentCompleted(self) -> int:
         """Indicate percentage completeness of the current operation.
 
         Returns:
             If valid, returns an integer between 0 and 100, where 0 indicates 0%
             progress (function just started) and 100 indicates 100% progress (i.e.
             completion).
-        
+
         """
         return self._get("percentcompleted")
 
-    def pixelsizex(self):
+    @property
+    def PixelSizeX(self):
         """Width of CCD chip pixels (microns)."""
         return self._get("pixelsizex")
 
-    def pixelsizey(self):
+    @property
+    def PixelSizeY(self):
         """Height of CCD chip pixels (microns)."""
         return self._get("pixelsizey")
 
-    def readoutmode(self, ReadoutMode: Optional[int] = None) -> int:
+    @property
+    def ReadoutMode(self):
+        return self._get("readoutmode")
+
+    @ReadoutMode.setter
+    def ReadoutMode(self, ReadoutMode: int):
         """Indicate the canera's readout mode as an index into the array ReadoutModes."""
-        if ReadoutMode == None:
-            return self._get("readoutmode")
         self._put("readoutmode", ReadoutMode=ReadoutMode)
 
-    def readoutmodes(self) -> List[int]:
+    @property
+    def ReadoutModes(self) -> List[int]:
         """List of available readout modes."""
         return self._get("readoutmodes")
 
-    def sensorname(self) -> str:
+    @property
+    def SensorName(self) -> str:
         """Name of the sensor used within the camera."""
         return self._get("sensorname")
 
-    def sensortype(self) -> int:
+    @property
+    def SensorType(self) -> int:
         """Type of information returned by the the camera sensor (monochrome or colour).
-        
+
         Notes:
             0 = Monochrome, 1 = Colour not requiring Bayer decoding, 2 = RGGB Bayer
             encoding, 3 = CMYG Bayer encoding, 4 = CMYG2 Bayer encoding, 5 = LRGB
             TRUESENSE Bayer encoding.
-            
+
         Returns:
             Value indicating whether the sensor is monochrome, or what Bayer matrix it
             encodes.
-        
+
         """
         return self._get("sensortype")
 
-    def setccdtemperature(self, SetCCDTemperature: Optional[float] = None) -> float:
+    @property
+    def SetCCDTemperature(self):
+        return self._get("setccdtemperature")
+
+    @SetCCDTemperature.setter
+    def SetCCDTemperature(self, SetCCDTemperature: float):
         """Set or return the camera's cooler setpoint (degrees Celsius).
 
         Args:
             SetCCDTemperature (float): 	Temperature set point (degrees Celsius).
-        
+
         Returns:
             Camera's cooler setpoint (degrees Celsius).
-        
+
         """
-        if SetCCDTemperature == None:
-            return self._get("setccdtemperature")
         self._put("setccdtemperature", SetCCDTemperature=SetCCDTemperature)
 
-    def startx(self, StartX: Optional[int] = None) -> int:
+    @property
+    def StartX(self):
+        return self._get("startx")
+
+    @StartX.setter
+    def StartX(self, StartX: int):
         """Set or return the current subframe X axis start position.
 
         Args:
             StartX (int): The subframe X axis start position in binned pixels.
-        
+
         Returns:
             Sets the subframe start position for the X axis (0 based) and returns the
             current value. If binning is active, value is in binned pixels.
-        
+
         """
-        if StartX == None:
-            return self._get("startx")
         self._put("startx", StartX=StartX)
 
-    def starty(self, StartY: Optional[int] = None) -> int:
+    @property
+    def StartY(self):
+        return self._get("starty")
+
+    @StartY.setter
+    def StartY(self, StartY: int):
         """Set or return the current subframe Y axis start position.
 
         Args:
             StartY (int): The subframe Y axis start position in binned pixels.
-        
+
         Returns:
             Sets the subframe start position for the Y axis (0 based) and returns the
             current value. If binning is active, value is in binned pixels.
-        
+
         """
-        if StartY == None:
-            return self._get("starty")
         self._put("starty", StartY=StartY)
 
-    def abortexposure(self):
+    def AbortExposure(self):
         """Abort the current exposure, if any, and returns the camera to Idle state."""
         self._put("abortexposure")
 
-    def pulseguide(self, Direction: int, Duration: int):
+    def PulseGuide(self, Direction: int, Duration: int):
         """Pulse guide in the specified direction for the specified time.
-        
+
         Args:
             Direction (int): Direction of movement (0 = North, 1 = South, 2 = East,
                 3 = West).
             Duration (int): Duration of movement in milli-seconds.
-        
+
         """
         self._put("pulseguide", Direction=Direction, Duration=Duration)
 
-    def startexposure(self, Duration: float, Light: bool):
+    def StartExposure(self, Duration: float, Light: bool):
         """Start an exposure.
-        
+
         Notes:
             Use ImageReady to check when the exposure is complete.
-        
+
         Args:
             Duration (float): Duration of exposure in seconds.
             Light (bool): True if light frame, false if dark frame.
@@ -1049,13 +1151,13 @@ class Camera(Device):
         """
         self._put("startexposure", Duration=Duration, Light=Light)
 
-    def stopexposure(self):
+    def StopExposure(self):
         """Stop the current exposure, if any.
-        
+
         Notes:
             If an exposure is in progress, the readout process is initiated. Ignored if
             readout is already in process.
-        
+
         """
         self._put("stopexposure")
 
@@ -1073,16 +1175,18 @@ class FilterWheel(Device):
         """Initialize FilterWheel object."""
         super().__init__(address, "filterwheel", device_number, protocall, api_version)
 
-    def focusoffsets(self) -> List[int]:
+    @property
+    def FocusOffsets(self) -> List[int]:
         """Filter focus offsets.
 
         Returns:
             An integer array of filter focus offsets.
-        
+
         """
         return self._get("focusoffsets")
 
-    def names(self) -> List[str]:
+    @property
+    def Names(self) -> List[str]:
         """Filter wheel filter names.
 
         Returns:
@@ -1091,7 +1195,12 @@ class FilterWheel(Device):
         """
         return self._get("names")
 
-    def position(self, Position: Optional[int] = None):
+    @property
+    def Position(self):
+        return self._get("position")
+
+    @Position.setter
+    def Position(self, Position: int):
         """Set or return the filter wheel position.
 
         Args:
@@ -1099,10 +1208,8 @@ class FilterWheel(Device):
 
         Returns:
             Returns the current filter wheel position.
-        
+
         """
-        if Position == None:
-            return self._get("position")
         self._put("position", Position=Position)
 
 
@@ -1119,16 +1226,18 @@ class Telescope(Device):
         """Initialize Telescope object."""
         super().__init__(address, "telescope", device_number, protocall, api_version)
 
-    def alignmentmode(self):
+    @property
+    def AlignmentMode(self):
         """Return the current mount alignment mode.
 
         Returns:
             Alignment mode of the mount (Alt/Az, Polar, German Polar).
-        
+
         """
         return self._get("alignmentmode")
 
-    def altitude(self):
+    @property
+    def Altitude(self):
         """Return the mount's Altitude above the horizon.
 
         Returns:
@@ -1137,7 +1246,8 @@ class Telescope(Device):
         """
         return self._get("altitude")
 
-    def aperturearea(self):
+    @property
+    def ApertureArea(self):
         """Return the telescope's aperture.
 
         Returns:
@@ -1146,7 +1256,8 @@ class Telescope(Device):
         """
         return self._get("aperturearea")
 
-    def aperturediameter(self):
+    @property
+    def ApertureDiameter(self):
         """Return the telescope's effective aperture.
 
         Returns:
@@ -1155,29 +1266,32 @@ class Telescope(Device):
         """
         return self._get("aperturediameter")
 
-    def athome(self):
+    @property
+    def AtHome(self):
         """Indicate whether the mount is at the home position.
 
         Returns:
             True if the mount is stopped in the Home position. Must be False if the
             telescope does not support homing.
-        
+
         """
         return self._get("athome")
 
-    def atpark(self):
+    @property
+    def AtPark(self):
         """Indicate whether the telescope is at the park position.
 
         Returns:
             True if the telescope has been put into the parked state by the seee park()
             method. Set False by calling the unpark() method.
-        
+
         """
         return self._get("atpark")
 
-    def azimuth(self):
+    @property
+    def Azimuth(self):
         """Return the telescope's aperture.
-        
+
         Return:
             Azimuth of the telescope's current position (degrees, North-referenced,
             positive East/clockwise).
@@ -1185,35 +1299,39 @@ class Telescope(Device):
         """
         return self._get("azimuth")
 
-    def canfindhome(self):
+    @property
+    def CanFindHome(self):
         """Indicate whether the mount can find the home position.
-        
+
         Returns:
             True if this telescope is capable of programmed finding its home position.
-        
+
         """
         return self._get("canfindhome")
 
-    def canpark(self):
+    @property
+    def CanPark(self):
         """Indicate whether the telescope can be parked.
 
         Returns:
             True if this telescope is capable of programmed parking.
-        
+
         """
         return self._get("canpark")
 
-    def canpulseguide(self):
+    @property
+    def CanPulseGuide(self):
         """Indicate whether the telescope can be pulse guided.
 
         Returns:
             True if this telescope is capable of software-pulsed guiding (via the
             pulseguide(int, int) method).
-        
+
         """
         return self._get("canpulseguide")
 
-    def cansetdeclinationrate(self):
+    @property
+    def CanSetDeclinationRate(self):
         """Indicate whether the DeclinationRate property can be changed.
 
         Returns:
@@ -1223,7 +1341,8 @@ class Telescope(Device):
         """
         return self._get("cansetdeclinationrate")
 
-    def cansetguiderates(self):
+    @property
+    def CanSetGuideRates(self):
         """Indicate whether the DeclinationRate property can be changed.
 
         Returns:
@@ -1233,7 +1352,8 @@ class Telescope(Device):
         """
         return self._get("cansetguiderates")
 
-    def cansetpark(self):
+    @property
+    def CanSetPark(self):
         """Indicate whether the telescope park position can be set.
 
         Returns:
@@ -1243,47 +1363,52 @@ class Telescope(Device):
         """
         return self._get("cansetpark")
 
-    def cansetpierside(self):
+    @property
+    def CanSetPierSide(self):
         """Indicate whether the telescope SideOfPier can be set.
 
         Returns:
             True if the SideOfPier property can be set, meaning that the mount can be
             forced to flip.
-        
+
         """
         return self._get("cansetpierside")
 
-    def cansetrightascensionrate(self):
+    @property
+    def CanSetRightAscensionRate(self):
         """Indicate whether the RightAscensionRate property can be changed.
 
         Returns:
             True if the RightAscensionRate property can be changed to provide offset
             tracking in the right ascension axis.
-        
+
         """
         return self._get("cansetrightascensionrate")
 
-    def cansettracking(self):
+    @property
+    def CanSetTracking(self):
         """Indicate whether the Tracking property can be changed.
 
         Returns:
             True if the Tracking property can be changed, turning telescope sidereal
             tracking on and off.
-        
+
         """
         return self._get("cansettracking")
 
-    def canslew(self):
+    @property
+    def CanSlew(self):
         """Indicate whether the telescope can slew synchronously.
 
         Returns:
             True if this telescope is capable of programmed slewing (synchronous or
             asynchronous) to equatorial coordinates.
-        
+
         """
         return self._get("canslew")
 
-    def canslewaltaz(self):
+    @property
+    def CanSlewAltAz(self):
         """Indicate whether the telescope can slew synchronously to AltAz coordinates.
 
         Returns:
@@ -1293,7 +1418,8 @@ class Telescope(Device):
         """
         return self._get("canslewaltaz")
 
-    def canslewaltazasync(self):
+    @property
+    def CanSlewAltAzAsync(self):
         """Indicate whether the telescope can slew asynchronusly to AltAz coordinates.
 
         Returns:
@@ -1303,27 +1429,34 @@ class Telescope(Device):
         """
         return self._get("canslewaltazasync")
 
-    def cansync(self):
+    @property
+    def CanSync(self):
         """Indicate whether the telescope can sync to equatorial coordinates.
 
         Returns:
             True if this telescope is capable of programmed synching to equatorial
             coordinates.
-        
+
         """
         return self._get("cansync")
 
-    def cansyncaltaz(self):
+    @property
+    def CanSyncAltAz(self):
         """Indicate whether the telescope can sync to local horizontal coordinates.
 
         Returns:
             True if this telescope is capable of programmed synching to local horizontal
             coordinates.
-        
+
         """
         return self._get("cansyncaltaz")
 
-    def declination(self):
+    @property
+    def CanUnpark(self):
+        return self._get("canunpark")
+
+    @property
+    def Declination(self):
         """Return the telescope's declination.
 
         Notes:
@@ -1332,42 +1465,49 @@ class Telescope(Device):
         Returns:
             The declination (degrees) of the telescope's current equatorial coordinates,
             in the coordinate system given by the EquatorialSystem property.
-        
+
         """
         return self._get("declination")
 
-    def declinationrate(self, DeclinationRate: Optional[float] = None):
+    @property
+    def DeclinationRate(self):
+        return self._get("declinationrate")
+
+    @DeclinationRate.setter
+    def DeclinationRate(self, DeclinationRate: float):
         """Set or return the telescope's declination tracking rate.
 
         Args:
             DeclinationRate (float): Declination tracking rate (arcseconds per second).
-        
+
         Returns:
             The declination tracking rate (arcseconds per second) if DeclinatioRate is
             not set.
-        
+
         """
-        if DeclinationRate == None:
-            return self._get("declinationrate")
         self._put("declinationrate", DeclinationRate=DeclinationRate)
 
-    def doesrefraction(self, DoesRefraction: Optional[bool] = None):
+    @property
+    def DoesRefraction(self):
+        return self._get("doesrefraction")
+
+    @DoesRefraction.setter
+    def DoesRefraction(self, DoesRefraction: bool):
         """Indicate or determine if atmospheric refraction is applied to coordinates.
 
         Args:
             DoesRefraction (bool): Set True to make the telescope or driver apply
                 atmospheric refraction to coordinates.
-        
+
         Returns:   
             True if the telescope or driver applies atmospheric refraction to
             coordinates.
 
         """
-        if DoesRefraction == None:
-            return self._get("doesrefraction")
         self._put("doesrefraction", DoesRefraction=DoesRefraction)
 
-    def equatorialsystem(self):
+    @property
+    def EquatorialSystem(self):
         """Return the current equatorial coordinate system used by this telescope.
 
         Returns:
@@ -1377,7 +1517,8 @@ class Telescope(Device):
         """
         return self._get("equatorialsystem")
 
-    def focallength(self):
+    @property
+    def FocalLength(self):
         """Return the telescope's focal length in meters.
 
         Returns:
@@ -1386,7 +1527,12 @@ class Telescope(Device):
         """
         return self._get("focallength")
 
-    def guideratedeclination(self, GuideRateDeclination: Optional[float] = None):
+    @property
+    def GuideRateDeclination(self):
+        return self._get("guideratedeclination")
+
+    @GuideRateDeclination.setter
+    def GuideRateDeclination(self, GuideRateDeclination: float):
         """Set or return the current Declination rate offset for telescope guiding.
 
         Args:
@@ -1397,11 +1543,15 @@ class Telescope(Device):
             Current declination rate offset for telescope guiding if not set.
 
         """
-        if GuideRateDeclination == None:
-            return self._get("guideratedeclination")
-        self._put("guideratedeclination", GuideRateDeclination=GuideRateDeclination)
+        self._put("guideratedeclination",
+                  GuideRateDeclination=GuideRateDeclination)
 
-    def guideraterightascension(self, GuideRateRightAscension: Optional[float] = None):
+    @property
+    def GuideRateRightAscension(self):
+        return self._get("guideraterightascension")
+
+    @GuideRateRightAscension.setter
+    def GuideRateRightAscension(self, GuideRateRightAscension: float):
         """Set or return the current RightAscension rate offset for telescope guiding.
 
         Args:
@@ -1412,22 +1562,22 @@ class Telescope(Device):
             Current right ascension rate offset for telescope guiding if not set.
 
         """
-        if GuideRateRightAscension == None:
-            return self._get("guideraterightascension")
         self._put(
             "guideraterightascension", GuideRateRightAscension=GuideRateRightAscension
         )
 
-    def ispulseguiding(self):
+    @property
+    def IsPulseGuiding(self):
         """Indicate whether the telescope is currently executing a PulseGuide command.
 
         Returns:
             True if a pulseguide(int, int) command is in progress, False otherwise.
-        
+
         """
         return self._get("ispulseguiding")
 
-    def rightascension(self):
+    @property
+    def RightAscension(self):
         """Return the telescope's right ascension coordinate.
 
         Returns:
@@ -1438,7 +1588,12 @@ class Telescope(Device):
         """
         return self._get("rightascension")
 
-    def rightascensionrate(self, RightAscensionRate: Optional[float] = None):
+    @property
+    def RightAscensionRate(self):
+        return self._get("rightascensionrate")
+
+    @RightAscensionRate.setter
+    def RightAscensionRate(self, RightAscensionRate: float):
         """Set or return the telescope's right ascension tracking rate.
 
         Args:
@@ -1449,25 +1604,27 @@ class Telescope(Device):
             Telescope's right ascension tracking rate if not set.
 
         """
-        if RightAscensionRate == None:
-            return self._get("rightascensionrate")
         self._put("rightascensionrate", RightAscensionRate=RightAscensionRate)
 
-    def sideofpier(self, SideOfPier: Optional[int] = None):
+    @property
+    def SideOfPier(self):
+        return self._get("sideofpier")
+
+    @SideOfPier.setter
+    def SideOfPier(self, SideOfPier: int):
         """Set or return the mount's pointing state.
 
         Args:
             SideOfPier (int): New pointing state. 0 = pierEast, 1 = pierWest
-        
+
         Returns:
             Side of pier if not set.
-        
+
         """
-        if SideOfPier == None:
-            return self._get("sideofpier")
         self._put("sideofpier", SideOfPier=SideOfPier)
 
-    def siderealtime(self):
+    @property
+    def SiderealTime(self):
         """Return the local apparent sidereal time.
 
         Returns:
@@ -1477,52 +1634,62 @@ class Telescope(Device):
         """
         return self._get("siderealtime")
 
-    def siteelevation(self, SiteElevation: Optional[float] = None):
+    @property
+    def SiteElevation(self):
+        return self._get("siteelevation")
+
+    @SiteElevation.setter
+    def SiteElevation(self, SiteElevation: float):
         """Set or return the observing site's elevation above mean sea level.
 
         Args:
             SiteElevation (float): Elevation above mean sea level (metres).
-        
+
         Returns:
             Elevation above mean sea level (metres) of the site at which the telescope
             is located if not set.
 
         """
-        if SiteElevation == None:
-            return self._get("siteelevation")
         self._put("siteelevation", SiteElevation=SiteElevation)
 
-    def sitelatitude(self, SiteLatitude: Optional[float] = None):
+    @property
+    def SiteLatitude(self):
+        return self._get("sitelatitude")
+
+    @SiteLatitude.setter
+    def SiteLatitude(self, SiteLatitude: float):
         """Set or return the observing site's latitude.
 
         Args:
             SiteLatitude (float): Site latitude (degrees).
-        
+
         Returns:
             Geodetic(map) latitude (degrees, positive North, WGS84) of the site at which
             the telescope is located if not set.
-        
+
         """
-        if SiteLatitude == None:
-            return self._get("sitelatitude")
         self._put("sitelatitude", SiteLatitude=SiteLatitude)
 
-    def sitelongitude(self, SiteLongitude: Optional[float] = None):
+    @property
+    def SiteLongitude(self):
+        return self._get("sitelongitude")
+
+    @SiteLongitude.setter
+    def SiteLongitude(self, SiteLongitude: float):
         """Set or return the observing site's longitude.
 
         Args:
             SiteLongitude (float): Site longitude (degrees, positive East, WGS84)
-        
+
         Returns:
             Longitude (degrees, positive East, WGS84) of the site at which the telescope
             is located.
-        
+
         """
-        if SiteLongitude == None:
-            return self._get("sitelongitude")
         self._put("sitelongitude", SiteLongitude=SiteLongitude)
 
-    def slewing(self):
+    @property
+    def Slewing(self):
         """Indicate whether the telescope is currently slewing.
 
         Returns:
@@ -1532,7 +1699,12 @@ class Telescope(Device):
         """
         return self._get("slewing")
 
-    def slewsettletime(self, SlewSettleTime: Optional[int] = None):
+    @property
+    def SlewSettleTime(self):
+        return self._get("slewsettletime")
+
+    @SlewSettleTime.setter
+    def SlewSettleTime(self, SlewSettleTime: int):
         """Set or return the post-slew settling time.
 
         Args:
@@ -1542,70 +1714,82 @@ class Telescope(Device):
             Returns the post-slew settling time (sec.) if not set.
 
         """
-        if SlewSettleTime == None:
-            return self._get("slewsettletime")
         self._put("slewsettletime", SlewSettleTime=SlewSettleTime)
 
-    def targetdeclination(self, TargetDeclination: Optional[float] = None):
+    @property
+    def TargetDeclination(self):
+        return self._get("targetdeclination")
+
+    @TargetDeclination.setter
+    def TargetDeclination(self, TargetDeclination: float):
         """Set or return the target declination of a slew or sync.
 
         Args:
             TargetDeclination (float): Target declination(degrees)
-        
+
         Returns:
             Declination (degrees, positive North) for the target of an equatorial slew
             or sync operation.
-        
+
         """
-        if TargetDeclination == None:
-            return self._get("targetdeclination")
         self._put("targetdeclination", TargetDeclination=TargetDeclination)
 
-    def targetrightascension(self, TargetRightAscension: Optional[float] = None):
+    @property
+    def TargetRightAscension(self):
+        return self._get("targetrightascension")
+
+    @TargetRightAscension.setter
+    def TargetRightAscension(self, TargetRightAscension: Optional[float] = None):
         """Set or return the current target right ascension.
 
         Args:
             TargetRightAscension (float): Target right ascension (hours).
-        
+
         Returns:
             Right ascension (hours) for the target of an equatorial slew or sync
             operation.
 
         """
-        if TargetRightAscension == None:
-            return self._get("targetrightascension")
-        self._put("targetrightascension", TargetRightAscension=TargetRightAscension)
+        self._put("targetrightascension",
+                  TargetRightAscension=TargetRightAscension)
 
-    def tracking(self, Tracking: Optional[bool] = None):
+    @property
+    def Tracking(self):
+        return self._get("tracking")
+
+    @Tracking.setter
+    def Tracking(self, Tracking: bool):
         """Enable, disable, or indicate whether the telescope is tracking.
 
         Args:
             Tracking (bool): Tracking enabled / disabled.
-        
+
         Returns:
             State of the telescope's sidereal tracking drive.
-        
+
         """
-        if Tracking == None:
-            return self._get("tracking")
         self._put("tracking", Tracking=Tracking)
 
-    def trackingrate(self, TrackingRate: Optional[int] = None):
+    @property
+    def TrackingRate(self):
+        return self._get("trackingrate")
+
+    @TrackingRate.setter
+    def TrackingRate(self, TrackingRate: int):
         """Set or return the current tracking rate.
 
         Args:
             TrackingRate (int): New tracking rate. 0 = driveSidereal, 1 = driveLunar,
                 2 = driveSolar, 3 = driveKing.
-        
+
         Returns:
             Current tracking rate of the telescope's sidereal drive if not set.
-        
+
         """
-        if TrackingRate == None:
-            return self._get("trackingrate")
         self._put("trackingrate", TrackingRate=TrackingRate)
 
-    def trackingrates(self):
+    @property
+    def TrackingRates(self):
         """Return a collection of supported DriveRates values.
 
         Returns:
@@ -1615,19 +1799,21 @@ class Telescope(Device):
         """
         return self._get("trackingrates")
 
-    def utcdate(self, UTCDate: Optional[Union[str, datetime]] = None):
+    @property
+    def UTCDate(self):
+        return dateutil.parser.parse(self._get("utcdate"))
+
+    @UTCDate.setter
+    def UTCDate(self, UTCDate: Union[str, datetime]):
         """Set or return the UTC date/time of the telescope's internal clock.
 
         Args:
             UTCDate: UTC date/time as an str or datetime.
-        
+
         Returns:
             datetime of the UTC date/time if not set.
-        
-        """
-        if UTCDate == None:
-            return dateutil.parser.parse(self._get("utcdate"))
 
+        """
         if type(UTCDate) is str:
             data = UTCDate
         elif type(UTCDate) is datetime:
@@ -1637,21 +1823,21 @@ class Telescope(Device):
 
         self._put("utcdate", UTCDate=data)
 
-    def abortslew(self):
+    def AbortSlew(self):
         """Immediatley stops a slew in progress."""
         self._put("abortslew")
 
-    def axisrates(self, Axis: int):
+    def AxisRates(self, Axis: int):
         """Return rates at which the telescope may be moved about the specified axis.
 
         Returns:
             The rates at which the telescope may be moved about the specified axis by
             the moveaxis(int, float) method.
-        
+
         """
         return self._get("axisrates", Axis=Axis)
 
-    def canmoveaxis(self, Axis: int):
+    def CanMoveAxis(self, Axis: int):
         """Indicate whether the telescope can move the requested axis.
 
         Returns:
@@ -1660,7 +1846,7 @@ class Telescope(Device):
         """
         return self._get("canmoveaxis", Axis=Axis)
 
-    def destinationsideofpier(self, RightAscension: float, Declination: float):
+    def DestinationSideOfPier(self, RightAscension: float, Declination: float):
         """Predict the pointing state after a German equatorial mount slews to given coordinates.
 
         Args:
@@ -1680,11 +1866,11 @@ class Telescope(Device):
             Declination=Declination,
         )
 
-    def findhome(self):
+    def FindHome(self):
         """Move the mount to the "home" position."""
         self._put("findhome")
 
-    def moveaxis(self, Axis: int, Rate: float):
+    def MoveAxis(self, Axis: int, Rate: float):
         """Move a telescope axis at the given rate.
 
         Args:
@@ -1695,11 +1881,11 @@ class Telescope(Device):
         """
         self._put("moveaxis", Axis=Axis, Rate=Rate)
 
-    def park(self):
+    def Park(self):
         """Park the mount."""
         self._put("park")
 
-    def pulseguide(self, Direction: int, Duration: int):
+    def PulseGuide(self, Direction: int, Duration: int):
         """Move the scope in the given direction for the given time.
 
         Notes:
@@ -1708,15 +1894,15 @@ class Telescope(Device):
         Args:
             Direction (int): Direction in which the guide-rate motion is to be made.
             Duration (int): Duration of the guide-rate motion (milliseconds).
-        
+
         """
         self._put("pulseguide", Direction=Direction, Duration=Duration)
 
-    def setpark(self):
+    def SetPark(self):
         """Set the telescope's park position."""
         self._put("setpark")
 
-    def slewtoaltaz(self, Azimuth: float, Altitude: float):
+    def SlewToAltAz(self, Azimuth: float, Altitude: float):
         """Slew synchronously to the given local horizontal coordinates.
 
         Args:
@@ -1727,7 +1913,7 @@ class Telescope(Device):
         """
         self._put("slewtoaltaz", Azimuth=Azimuth, Altitude=Altitude)
 
-    def slewtoaltazasync(self, Azimuth: float, Altitude: float):
+    def SlewToAltAzAsync(self, Azimuth: float, Altitude: float):
         """Slew asynchronously to the given local horizontal coordinates.
 
         Args:
@@ -1738,7 +1924,7 @@ class Telescope(Device):
         """
         self._put("slewtoaltazasync", Azimuth=Azimuth, Altitude=Altitude)
 
-    def slewtocoordinates(self, RightAscension: float, Declination: float):
+    def SlewToCoordinates(self, RightAscension: float, Declination: float):
         """Slew synchronously to the given equatorial coordinates.
 
         Args:
@@ -1750,13 +1936,13 @@ class Telescope(Device):
             "slewtocoordinates", RightAscension=RightAscension, Declination=Declination
         )
 
-    def slewtocoordinatesasync(self, RightAscension: float, Declination: float):
+    def SlewToCoordinatesAsync(self, RightAscension: float, Declination: float):
         """Slew asynchronously to the given equatorial coordinates.
 
         Args:
             RightAscension (float): Right Ascension coordinate (hours).
             Declination (float): Declination coordinate (degrees).
-        
+
         """
         self._put(
             "slewtocoordinatesasync",
@@ -1764,15 +1950,15 @@ class Telescope(Device):
             Declination=Declination,
         )
 
-    def slewtotarget(self):
+    def SlewToTarget(self):
         """Slew synchronously to the TargetRightAscension and TargetDeclination coordinates."""
         self._put("slewtotarget")
 
-    def slewtotargetasync(self):
+    def SlewToTargetAsync(self):
         """Asynchronously slew to the TargetRightAscension and TargetDeclination coordinates."""
         self._put("slewtotargetasync")
 
-    def synctoaltaz(self, Azimuth: float, Altitude: float):
+    def SyncToAltAz(self, Azimuth: float, Altitude: float):
         """Sync to the given local horizontal coordinates.
 
         Args:
@@ -1783,7 +1969,7 @@ class Telescope(Device):
         """
         self._put("synctoaltaz", Azimuth=Azimuth, Altitude=Altitude)
 
-    def synctocoordinates(self, RightAscension: float, Declination: float):
+    def SyncToCoordinates(self, RightAscension: float, Declination: float):
         """Sync to the given equatorial coordinates.
 
         Args:
@@ -1795,22 +1981,133 @@ class Telescope(Device):
             "synctocoordinates", RightAscension=RightAscension, Declination=Declination
         )
 
-    def synctotarget(self):
+    def SyncToTarget(self):
         """Sync to the TargetRightAscension and TargetDeclination coordinates."""
         self._put("synctotarget")
 
-    def unpark(self):
+    def Unpark(self):
         """Unpark the mount."""
         self._put("unpark")
 
 
+class Rotator(Device):
+    """Rotator specific methods."""
+
+    def __init__(
+        self,
+        address: str,
+        device_number: int,
+        protocall: str = "http",
+        api_version: int = DEFAULT_API_VERSION,
+    ):
+        """Initialize Rotator object."""
+        super().__init__(address, "rotator", device_number, protocall, api_version)
+
+    @property
+    def CanReverse(self):
+        return self._get("canreverse")
+
+    @property
+    def IsMoving(self):
+        return self._get("ismoving")
+
+    @property
+    def Position(self):
+        return self._get("position")
+
+    @property
+    def Reverse(self):
+        return self._get("reverse")
+
+    @Reverse.setter
+    def Reverse(self, Reverse: bool):
+        self._put("reverse", Reverse=Reverse)
+
+    @property
+    def StepSize(self):
+        return self._get("stepsize")
+
+    @property
+    def TargetPosition(self):
+        return self._get("targetposition")
+
+    def Halt(self):
+        self._put("halt")
+
+    def Move(self, Position: int):
+        self._put("move", Position=Position)
+
+    def MoveAbsolute(self, Position: int):
+        self._put("moveabsolute", Position=Position)
+
+
+class Focuser(Device):
+    """Focuser specific methods."""
+
+    def __init__(
+        self,
+        address: str,
+        device_number: int,
+        protocall: str = "http",
+        api_version: int = DEFAULT_API_VERSION,
+    ):
+        """Initialize Focuser object."""
+        super().__init__(address, "focuser", device_number, protocall, api_version)
+
+    @property
+    def Absolute(self) -> bool:
+        return self._get("absolute")
+
+    @property
+    def IsMoving(self) -> bool:
+        return self._get("ismoving")
+
+    @property
+    def MaxIncrement(self) -> int:
+        return self._get("maxincrement")
+
+    @property
+    def MaxStep(self) -> int:
+        return self._get("maxstep")
+
+    @property
+    def Position(self) -> int:
+        return self._get("position")
+
+    @property
+    def StepSize(self) -> float:
+        return self._get("stepsize")
+
+    @property
+    def TempComp(self) -> bool:
+        return self._get("tempcomp")
+
+    @TempComp.setter
+    def TempComp(self, TempComp: bool):
+        self._put("tempcomp", TempComp=TempComp)
+
+    @property
+    def TempCompAvailable(self) -> bool:
+        return self._get("tempcompavailable")
+
+    @property
+    def Temperature(self) -> float:
+        return self._get("temperature")
+
+    def Halt(self):
+        self._put("halt")
+
+    def Move(self, Position: int):
+        self._put("move", Position=Position)
+
+
 class NumericError(Exception):
     """Exception for when Alpaca throws an error with a numeric value.
-    
+
     Args:
         ErrorNumber (int): Non-zero integer.
         ErrorMessage (str): Message describing the issue that was encountered.
-    
+
     """
 
     def __init__(self, ErrorNumber: int, ErrorMessage: str):
@@ -1825,10 +2122,10 @@ class NumericError(Exception):
 
 class ErrorMessage(Exception):
     """Exception for when Alpaca throws an error without a numeric value.
-    
+
     Args:
         Value (str): Message describing the issue that was encountered.
-    
+
     """
 
     def __init__(self, Value: str):
